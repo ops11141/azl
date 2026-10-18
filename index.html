@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f8fc">
+<title>إشعار تقرير الأعمال والإنطفاء</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#203047;--muted:#718096;--line:#dce5ef;--blue:#2367d1;--blue2:#eaf2ff;--green:#167a57;--red:#b84c45;--shadow:0 12px 32px rgba(33,59,91,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif;line-height:1.7}
+.wrap{width:min(100% - 28px,1050px);margin:28px auto 42px}
+header{background:linear-gradient(135deg,#fff,#edf4ff);border:1px solid var(--line);border-radius:8px;padding:24px 22px;margin-bottom:20px}
+.kicker{color:var(--blue);font-size:12px;font-weight:700;letter-spacing:.3px}.heading{display:flex;align-items:center;gap:14px;margin-top:4px}.mark{width:46px;height:46px;display:grid;place-items:center;background:var(--blue2);border:1px solid #cbdcff;border-radius:6px;font-size:24px}h1{font-size:clamp(21px,4vw,30px);line-height:1.35;margin:0}header p{color:var(--muted);margin:10px 0 0;font-size:14px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:22px;box-shadow:var(--shadow);margin-bottom:20px}.section-title{font-size:18px;margin:0 0 18px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field.full{grid-column:1/-1}label{font-size:13px;font-weight:700;color:#40536b}input,select{width:100%;min-height:46px;border:1px solid #cfd9e5;border-radius:4px;background:#fff;padding:10px 12px;color:var(--ink);font:inherit;outline:none}input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2367d11c}input[type=date],input[type=time]{direction:ltr;text-align:left}button{font:inherit;cursor:pointer;border-radius:4px;min-height:44px;padding:10px 16px;border:1px solid transparent;font-weight:700}.primary{background:var(--blue);color:white}.primary:disabled{opacity:.6;cursor:wait}.actions{display:flex;gap:10px;align-items:center;margin-top:17px;flex-wrap:wrap}.hint{color:var(--muted);font-size:12px}.status{font-size:13px;margin-top:12px;min-height:22px}.status.error{color:var(--red)}.status.ok{color:var(--green)}
+.list-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.list-head h2{font-size:19px;margin:0}.count{background:var(--blue2);color:var(--blue);border:1px solid #d2e1ff;padding:3px 10px;border-radius:4px;font-size:12px;white-space:nowrap}.records{display:grid;grid-template-columns:1fr;gap:10px}.record{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;padding:16px;border:1px solid var(--line);border-radius:5px;background:#fff}.record h3{font-size:16px;margin:0 0 5px}.record .region{color:var(--blue);font-size:13px;font-weight:700}.record .times{color:#52657b;font-size:13px;direction:ltr;text-align:right}.tag{align-self:start;padding:4px 9px;border:1px solid #cbdcff;background:#f1f6ff;color:#285eb0;border-radius:3px;font-size:12px;white-space:nowrap}.empty{padding:28px 12px;text-align:center;border:1px dashed #cbd6e3;color:var(--muted);border-radius:5px}.footer{text-align:center;color:#8794a5;font-size:12px;padding:8px}
+@media(max-width:600px){.wrap{width:calc(100% - 20px);margin-top:12px}.panel{padding:16px}.form-grid{grid-template-columns:1fr;gap:12px}.field.full{grid-column:auto}header{padding:18px}.record{grid-template-columns:1fr;gap:8px}.tag{justify-self:start}.list-head{align-items:flex-start}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header>
+<div class="kicker">تنسيق الأعمال الميدانية</div>
+<div class="heading"><div class="mark" aria-hidden="true">▤</div><h1>إشعار تقرير الأعمال والإنطفاء</h1></div>
+<p>سجّل العمل والمنطقة وفترة التنفيذ ليظهر الإشعار لجميع مستخدمي الصفحة.</p>
+</header>
+<section class="panel" aria-labelledby="formTitle">
+<h2 class="section-title" id="formTitle">إضافة إشعار جديد</h2>
+<form id="noticeForm">
+<div class="form-grid">
+<div class="field"><label for="region">المنطقة</label><input id="region" name="region" placeholder="مثال: حفر الباطن" maxlength="100" required></div>
+<div class="field"><label for="workName">اسم العمل</label><select id="workName" name="workName" required><option value="عمل مجدول">عمل مجدول</option><option value="إنطفاء">إنطفاء</option><option value="أعمال صيانة">أعمال صيانة</option><option value="أخرى">أخرى</option></select></div>
+<div class="field"><label for="startDate">تاريخ البداية</label><input id="startDate" type="date" required></div>
+<div class="field"><label for="startTime">وقت البداية (24 ساعة)</label><input id="startTime" type="time" step="60" required></div>
+<div class="field"><label for="endDate">تاريخ النهاية</label><input id="endDate" type="date" required></div>
+<div class="field"><label for="endTime">وقت النهاية (24 ساعة)</label><input id="endTime" type="time" step="60" required></div>
+</div>
+<div class="actions"><button class="primary" id="submitBtn" type="submit">إضافة الإشعار</button><span class="hint">الوقت بنظام 24 ساعة، مثل 14:30.</span></div>
+<div class="status" id="formStatus" role="status" aria-live="polite"></div>
+</form>
+</section>
+<section class="panel" aria-labelledby="recordsTitle">
+<div class="list-head"><h2 id="recordsTitle">الإشعارات الحالية</h2><span class="count" id="count">0 إشعار</span></div>
+<div id="records" class="records"><div class="empty">جارٍ تحميل الإشعارات…</div></div>
+</section>
+<div class="footer">صفحة مشتركة لإشعارات الأعمال والإنطفاءات · توقيت المملكة العربية السعودية</div>
+</main>
+<script>
+/* ضع بيانات مشروع Supabase الخاص بـ AZL هنا بعد إنشائه. لا تستخدم service_role key في المتصفح. */
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const TABLE = "work_notices";
+const form = document.getElementById("noticeForm");
+const statusEl = document.getElementById("formStatus");
+const recordsEl = document.getElementById("records");
+const countEl = document.getElementById("count");
+const submitBtn = document.getElementById("submitBtn");
+let db = null;
+const configured = SUPABASE_URL.startsWith("https://") && !SUPABASE_URL.includes("YOUR_") && !SUPABASE_ANON_KEY.includes("YOUR_");
+if (configured && window.supabase) {
+  db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  loadRecords();
+  db.channel("work-notices-live").on("postgres_changes",{event:"*",schema:"public",table:TABLE},loadRecords).subscribe();
+} else {
+  recordsEl.innerHTML = '<div class="empty">الواجهة جاهزة. لإظهار الإشعارات المشتركة فعليًا، يلزم ربط الصفحة بمشروع Supabase وإعداد جدول البيانات.</div>';
+  setStatus("أكمل إعداد Supabase أولًا لتفعيل الحفظ المشترك بين الموظفين.","error");
+}
+function setStatus(message,type=""){statusEl.textContent=message;statusEl.className="status "+type;}
+function validDateTime(date,time){return new Date(date+"T"+time+":00+03:00").getTime();}
+function esc(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function fmtDate(date){if(!date)return "";const p=date.split("-");return p.length===3?p[2]+"-"+p[1]+"-"+p[0]:date;}
+function renderRecords(rows){
+  countEl.textContent=rows.length+" إشعار";
+  if(!rows.length){recordsEl.innerHTML='<div class="empty">لا توجد إشعارات حاليًا.</div>';return;}
+  recordsEl.innerHTML=rows.map(r=>'<article class="record"><div><div class="region">'+esc(r.region)+'</div><h3>'+esc(r.work_name)+'</h3><div class="times">'+esc(fmtDate(r.start_date))+' · '+esc(r.start_time)+' — '+esc(fmtDate(r.end_date))+' · '+esc(r.end_time)+'</div></div><span class="tag">'+esc(r.work_name)+'</span></article>').join("");
+}
+async function loadRecords(){
+  if(!db)return;
+  const {data,error}=await db.from(TABLE).select("id,region,work_name,start_date,start_time,end_date,end_time,created_at").order("start_date",{ascending:true}).order("start_time",{ascending:true});
+  if(error){recordsEl.innerHTML='<div class="empty">تعذّر تحميل الإشعارات. تحقق من إعداد قاعدة البيانات والصلاحيات.</div>';return;}
+  renderRecords(data||[]);
+}
+form.addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(!db){setStatus("لا يمكن الحفظ قبل ربط Supabase.","error");return;}
+  const payload={
+    region:document.getElementById("region").value.trim(),
+    work_name:document.getElementById("workName").value,
+    start_date:document.getElementById("startDate").value,
+    start_time:document.getElementById("startTime").value,
+    end_date:document.getElementById("endDate").value,
+    end_time:document.getElementById("endTime").value
+  };
+  if(!payload.region){setStatus("اكتب اسم المنطقة.","error");return;}
+  if(validDateTime(payload.end_date,payload.end_time)<validDateTime(payload.start_date,payload.start_time)){setStatus("تاريخ ووقت النهاية يجب أن يكونا بعد البداية.","error");return;}
+  submitBtn.disabled=true;submitBtn.textContent="جارٍ الحفظ…";setStatus("");
+  const {error}=await db.from(TABLE).insert(payload);
+  submitBtn.disabled=false;submitBtn.textContent="إضافة الإشعار";
+  if(error){setStatus("لم يتم الحفظ. تحقق من إعداد قاعدة البيانات ثم حاول مجددًا.","error");return;}
+  form.reset();setStatus("تمت إضافة الإشعار بنجاح.","ok");await loadRecords();
+});
+</script>
+</body>
+</html>
