@@ -6,8 +6,8 @@ create table if not exists public.work_notices (
   region text not null check (char_length(trim(region)) between 1 and 100),
   work_name text not null check (work_name in ('عمل مجدول', 'عمل طارئ', 'صيانة')),
   department text not null check (department in ('الصيانة', 'الإنشاءات', 'الطواري', 'العمليات')),
-  employee_name text not null check (char_length(trim(employee_name)) between 1 and 100),
-  work_description text not null check (char_length(trim(work_description)) between 1 and 500),
+  employee_name text,
+  work_description text,
   start_date date not null,
   start_time time without time zone not null,
   end_date date not null,
@@ -41,13 +41,13 @@ with check (
   char_length(trim(region)) between 1 and 100
   and work_name in ('عمل مجدول', 'عمل طارئ', 'صيانة')
   and department in ('الصيانة', 'الإنشاءات', 'الطواري', 'العمليات')
-  and char_length(trim(employee_name)) between 1 and 100
-  and char_length(trim(work_description)) between 1 and 500
+  and (employee_name is null or char_length(trim(employee_name)) <= 100)
+  and (work_description is null or char_length(trim(work_description)) <= 500)
   and (end_date + end_time) >= (start_date + start_time)
 );
 
--- حذف جميع إشعارات الأسبوع السابق تلقائيًا كل جمعة الساعة 00:00 بتوقيت السعودية.
--- السعودية UTC+3، لذا الموعد المقابل هو الخميس 21:00 بالتوقيت العالمي (UTC).
+-- حذف الإشعارات تلقائيًا كل جمعة الساعة 00:00 بتوقيت السعودية (بداية يوم الجمعة).
+-- السعودية UTC+3 طوال العام، لذا الموعد المقابل هو الخميس 21:00 بالتوقيت العالمي (UTC).
 create or replace function public.clear_work_notices_weekly()
 returns void
 language sql
