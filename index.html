@@ -54,7 +54,7 @@ header:before{content:"";position:absolute;inset:0 auto 0 0;width:8px;background
 <div class="footer"><span>◷ &nbsp; صفحة إشعارات الأعمال والإنطفاءات</span><span>◈ &nbsp; بيانات الإشعارات مشتركة لجميع المستخدمين</span></div>
 </main>
 <script>
-/* ضع بيانات مشروع Supabase الخاص بـ AZL هنا بعد إنشائه. لا تستخدم service_role key في المتصفح. */
+/* الاتصال بمشروع Supabase. استخدم مفتاح النشر العام فقط في المتصفح، وليس secret/service_role. */
 const SUPABASE_URL = "https://sxmjyutvnlbifwwymzpw.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_uS2BzyAcI-zVi8mMeTv0rg_ceJFI91f";
 const TABLE = "work_notices";
@@ -78,8 +78,12 @@ const regionChoice = document.getElementById("regionChoice");
 document.querySelectorAll(".time24").forEach(input => {
   input.addEventListener("input", () => {
     const arabicDigits = {"٠":"0","١":"1","٢":"2","٣":"3","٤":"4","٥":"5","٦":"6","٧":"7","٨":"8","٩":"9"};
+    const start = input.selectionStart ?? input.value.length;
+    const before = input.value.slice(0, start).replace(/[٠-٩]/g, d => arabicDigits[d]).replace(/[^0-9]/g, "").length;
     let digits = input.value.replace(/[٠-٩]/g, d => arabicDigits[d]).replace(/[^0-9]/g, "").slice(0, 4);
     input.value = digits.length > 2 ? digits.slice(0, 2) + ":" + digits.slice(2) : digits;
+    const caret = before > 2 ? before + 1 : before;
+    try { input.setSelectionRange(caret, caret); } catch (_) {}
     input.setCustomValidity("");
   });
   input.addEventListener("blur", () => {
@@ -118,10 +122,20 @@ function renderRecords(rows){
   recordsEl.innerHTML=rows.map((r,i)=>'<article class="record"><div class="num">'+(i+1)+'</div><div><span class="meta-label">المنطقة</span><div class="region">'+esc(r.region)+'</div></div><div><span class="meta-label">نوع العمل</span><span class="tag">'+esc(r.work_name)+'</span></div><div><span class="meta-label">القسم</span><span class="tag">'+esc(r.department||"—")+'</span></div><div><span class="meta-label">اسم الموظف</span><h3>'+esc(r.employee_name||"—")+'</h3></div><div><span class="meta-label">وصف العمل</span><h3>'+esc(r.work_description||"—")+'</h3></div><div><span class="meta-label">بداية العمل</span><div class="times">'+esc(fmtDate(r.start_date))+'<br>'+esc(r.start_time).slice(0,5)+'</div></div><div><span class="meta-label">نهاية العمل</span><div class="times">'+esc(fmtDate(r.end_date))+'<br>'+esc(r.end_time).slice(0,5)+'</div></div><div class="record-actions"><button type="button" class="action-btn edit-btn" data-action="edit" data-id="'+esc(r.id)+'">تعديل</button><button type="button" class="action-btn delete-btn" data-action="delete" data-id="'+esc(r.id)+'">حذف</button></div></article>').join("");
 }
 async function loadRecords(){
-  if(!db)return;
-  const {data,error}=await db.from(TABLE).select("id,region,work_name,department,employee_name,work_description,start_date,start_time,end_date,end_time,created_at").order("start_date",{ascending:true}).order("start_time",{ascending:true});
-  if(error){recordsEl.innerHTML='<div class="empty">تعذّر تحميل الإشعارات. تحقق من إعداد قاعدة البيانات والصلاحيات.</div>';return;}
-  renderRecords(data||[]);
+  if(!db){
+    recordsEl.innerHTML = '<div class="empty">تعذّر الاتصال بخدمة قاعدة البيانات. أعد تحميل الصفحة، وإذا استمرت المشكلة تحقق من اتصال الإنترنت.</div>';
+    setStatus("تعذّر بدء الاتصال بقاعدة البيانات.","error");
+    return;
+  }
+  recordsEl.innerHTML = '<div class="empty">جارٍ تحميل الإشعارات…</div>';
+  try {
+    const {data,error}=await db.from(TABLE).select("id,region,work_name,department,employee_name,work_description,start_date,start_time,end_date,end_time,created_at").order("start_date",{ascending:true}).order("start_time",{ascending:true});
+    if(error){recordsEl.innerHTML='<div class="empty">تعذّر تحميل الإشعارات: '+esc(error.message||"تحقق من صلاحيات قاعدة البيانات") + '</div>';setStatus("فشل تحميل الإشعارات من قاعدة البيانات.","error");return;}
+    renderRecords(data||[]);
+  } catch (error) {
+    recordsEl.innerHTML = '<div class="empty">تعذّر الاتصال بقاعدة البيانات. تحقق من الإنترنت ثم حدّث الصفحة.</div>';
+    setStatus("حدث خطأ أثناء الاتصال بقاعدة البيانات.","error");
+  }
 }
 function setEditMode(row){
   editingId = row.id;
@@ -194,7 +208,10 @@ form.addEventListener("submit",async e=>{
   const {error}= editingId ? await db.from(TABLE).update(payload).eq("id",editingId) : await db.from(TABLE).insert(payload);
   submitBtn.disabled=false;submitBtn.textContent="إضافة الإشعار";
   if(error){setStatus("لم يتم الحفظ. تحقق من إعداد قاعدة البيانات ثم حاول مجددًا.","error");return;}
-  const wasEditing = editingId !== null;\n  resetEditMode();setStatus(wasEditing ? "تم حفظ تعديلات الإشعار." : "تمت إضافة الإشعار بنجاح.","ok");await loadRecords();
+  const wasEditing = editingId !== null;
+  resetEditMode();
+  setStatus(wasEditing ? "تم حفظ تعديلات الإشعار." : "تمت إضافة الإشعار بنجاح.","ok");
+  await loadRecords();
 });
 </script>
 </body>
