@@ -12,7 +12,7 @@
 .wrap{width:min(100% - 28px,1050px);margin:28px auto 42px}
 header{background:linear-gradient(135deg,#fff,#edf4ff);border:1px solid var(--line);border-radius:8px;padding:24px 22px;margin-bottom:20px}
 .kicker{color:var(--blue);font-size:12px;font-weight:700;letter-spacing:.3px}.heading{display:flex;align-items:center;gap:14px;margin-top:4px}.mark{width:46px;height:46px;display:grid;place-items:center;background:var(--blue2);border:1px solid #cbdcff;border-radius:6px;font-size:24px}h1{font-size:clamp(21px,4vw,30px);line-height:1.35;margin:0}header p{color:var(--muted);margin:10px 0 0;font-size:14px}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:22px;box-shadow:var(--shadow);margin-bottom:20px}.section-title{font-size:18px;margin:0 0 18px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field.full{grid-column:1/-1}label{font-size:13px;font-weight:700;color:#40536b}input,select{width:100%;min-height:46px;border:1px solid #cfd9e5;border-radius:4px;background:#fff;padding:10px 12px;color:var(--ink);font:inherit;outline:none}input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2367d11c}input[type=date],input[type=time]{direction:ltr;text-align:left}button{font:inherit;cursor:pointer;border-radius:4px;min-height:44px;padding:10px 16px;border:1px solid transparent;font-weight:700}.primary{background:var(--blue);color:white}.primary:disabled{opacity:.6;cursor:wait}.actions{display:flex;gap:10px;align-items:center;margin-top:17px;flex-wrap:wrap}.hint{color:var(--muted);font-size:12px}.status{font-size:13px;margin-top:12px;min-height:22px}.status.error{color:var(--red)}.status.ok{color:var(--green)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:22px;box-shadow:var(--shadow);margin-bottom:20px}.section-title{font-size:18px;margin:0 0 18px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field.full{grid-column:1/-1}label{font-size:13px;font-weight:700;color:#40536b}input,select{width:100%;min-height:46px;border:1px solid #cfd9e5;border-radius:4px;background:#fff;padding:10px 12px;color:var(--ink);font:inherit;outline:none}input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2367d11c}input[type=date],input[type=time]{direction:ltr;text-align:left}input[type=time]{font-family:Arial,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.4px}button{font:inherit;cursor:pointer;border-radius:4px;min-height:44px;padding:10px 16px;border:1px solid transparent;font-weight:700}.primary{background:var(--blue);color:white}.primary:disabled{opacity:.6;cursor:wait}.actions{display:flex;gap:10px;align-items:center;margin-top:17px;flex-wrap:wrap}.hint{color:var(--muted);font-size:12px}.status{font-size:13px;margin-top:12px;min-height:22px}.status.error{color:var(--red)}.status.ok{color:var(--green)}
 .list-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.list-head h2{font-size:19px;margin:0}.count{background:var(--blue2);color:var(--blue);border:1px solid #d2e1ff;padding:3px 10px;border-radius:4px;font-size:12px;white-space:nowrap}.records{display:grid;grid-template-columns:1fr;gap:10px}.record{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;padding:16px;border:1px solid var(--line);border-radius:5px;background:#fff}.record h3{font-size:16px;margin:0 0 5px}.record .region{color:var(--blue);font-size:13px;font-weight:700}.record .times{color:#52657b;font-size:13px;direction:ltr;text-align:right}.tag{align-self:start;padding:4px 9px;border:1px solid #cbdcff;background:#f1f6ff;color:#285eb0;border-radius:3px;font-size:12px;white-space:nowrap}.empty{padding:28px 12px;text-align:center;border:1px dashed #cbd6e3;color:var(--muted);border-radius:5px}.footer{text-align:center;color:#8794a5;font-size:12px;padding:8px}
 @media(max-width:600px){.wrap{width:calc(100% - 20px);margin-top:12px}.panel{padding:16px}.form-grid{grid-template-columns:1fr;gap:12px}.field.full{grid-column:auto}header{padding:18px}.record{grid-template-columns:1fr;gap:8px}.tag{justify-self:start}.list-head{align-items:flex-start}}
 </style>
@@ -29,7 +29,8 @@ header{background:linear-gradient(135deg,#fff,#edf4ff);border:1px solid var(--li
 <form id="noticeForm">
 <div class="form-grid">
 <div class="field"><label for="region">المنطقة</label><input id="region" name="region" placeholder="مثال: حفر الباطن" maxlength="100" required></div>
-<div class="field"><label for="workName">اسم العمل</label><select id="workName" name="workName" required><option value="عمل مجدول">عمل مجدول</option><option value="إنطفاء">إنطفاء</option><option value="أعمال صيانة">أعمال صيانة</option><option value="أخرى">أخرى</option></select></div>
+<div class="field"><label for="workName">نوع العمل</label><select id="workName" name="workName" required><option value="عمل مجدول">عمل مجدول</option><option value="عمل طارئ">عمل طارئ</option><option value="صيانة">صيانة</option></select></div>
+<div class="field"><label for="department">القسم</label><select id="department" name="department" required><option value="الصيانة">الصيانة</option><option value="الإنشاءات">الإنشاءات</option><option value="الطواري">الطواري</option><option value="العمليات">العمليات</option></select></div>
 <div class="field"><label for="startDate">تاريخ البداية</label><input id="startDate" type="date" required></div>
 <div class="field"><label for="startTime">وقت البداية (24 ساعة)</label><input id="startTime" type="time" step="60" required></div>
 <div class="field"><label for="endDate">تاريخ النهاية</label><input id="endDate" type="date" required></div>
@@ -72,11 +73,11 @@ function fmtDate(date){if(!date)return "";const p=date.split("-");return p.lengt
 function renderRecords(rows){
   countEl.textContent=rows.length+" إشعار";
   if(!rows.length){recordsEl.innerHTML='<div class="empty">لا توجد إشعارات حاليًا.</div>';return;}
-  recordsEl.innerHTML=rows.map(r=>'<article class="record"><div><div class="region">'+esc(r.region)+'</div><h3>'+esc(r.work_name)+'</h3><div class="times">'+esc(fmtDate(r.start_date))+' · '+esc(r.start_time)+' — '+esc(fmtDate(r.end_date))+' · '+esc(r.end_time)+'</div></div><span class="tag">'+esc(r.work_name)+'</span></article>').join("");
+  recordsEl.innerHTML=rows.map(r=>'<article class="record"><div><div class="region">'+esc(r.region)+' · '+esc(r.department||"")+'</div><h3>'+esc(r.work_name)+'</h3><div class="times">'+esc(fmtDate(r.start_date))+' · '+esc(r.start_time).slice(0,5)+' — '+esc(fmtDate(r.end_date))+' · '+esc(r.end_time).slice(0,5)+'</div></div><span class="tag">'+esc(r.work_name)+'</span></article>').join("");
 }
 async function loadRecords(){
   if(!db)return;
-  const {data,error}=await db.from(TABLE).select("id,region,work_name,start_date,start_time,end_date,end_time,created_at").order("start_date",{ascending:true}).order("start_time",{ascending:true});
+  const {data,error}=await db.from(TABLE).select("id,region,work_name,department,start_date,start_time,end_date,end_time,created_at").order("start_date",{ascending:true}).order("start_time",{ascending:true});
   if(error){recordsEl.innerHTML='<div class="empty">تعذّر تحميل الإشعارات. تحقق من إعداد قاعدة البيانات والصلاحيات.</div>';return;}
   renderRecords(data||[]);
 }
@@ -86,6 +87,7 @@ form.addEventListener("submit",async e=>{
   const payload={
     region:document.getElementById("region").value.trim(),
     work_name:document.getElementById("workName").value,
+    department:document.getElementById("department").value,
     start_date:document.getElementById("startDate").value,
     start_time:document.getElementById("startTime").value,
     end_date:document.getElementById("endDate").value,
