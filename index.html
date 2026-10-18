@@ -61,11 +61,11 @@ const TABLE = "work_notices";
 (function showCurrentWeek(){
   const range = document.getElementById("weekRange");
   const now = new Date();
-  const day = (now.getDay()+6)%7;
-  const monday = new Date(now); monday.setDate(now.getDate()-day); monday.setHours(0,0,0,0);
-  const sunday = new Date(monday); sunday.setDate(monday.getDate()+6);
+  const day = now.getDay(); // الأحد = 0، السبت = 6
+  const sunday = new Date(now); sunday.setDate(now.getDate()-day); sunday.setHours(0,0,0,0);
+  const saturday = new Date(sunday); saturday.setDate(sunday.getDate()+6);
   const fmt = d => new Intl.DateTimeFormat("en-GB",{day:"2-digit",month:"2-digit",year:"numeric",timeZone:"Asia/Riyadh"}).format(d);
-  if(range) range.textContent = fmt(monday)+" — "+fmt(sunday);
+  if(range) range.textContent = fmt(sunday)+" — "+fmt(saturday);
 })();
 const form = document.getElementById("noticeForm");
 const statusEl = document.getElementById("formStatus");
