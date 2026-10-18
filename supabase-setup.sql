@@ -24,7 +24,7 @@ alter table public.work_notices add column if not exists work_description text;
 
 alter table public.work_notices enable row level security;
 
-grant select, insert on public.work_notices to anon, authenticated;
+grant select, insert, update, delete on public.work_notices to anon, authenticated;
 grant usage, select on sequence public.work_notices_id_seq to anon, authenticated;
 
 drop policy if exists "Anyone can view work notices" on public.work_notices;
@@ -45,6 +45,26 @@ with check (
   and (work_description is null or char_length(trim(work_description)) <= 500)
   and (end_date + end_time) >= (start_date + start_time)
 );
+
+drop policy if exists "Anyone can update work notices" on public.work_notices;
+create policy "Anyone can update work notices"
+on public.work_notices for update
+to anon, authenticated
+using (true)
+with check (
+  char_length(trim(region)) between 1 and 100
+  and work_name in ('عمل مجدول', 'عمل طارئ', 'صيانة')
+  and department in ('الصيانة', 'الإنشاءات', 'الطواري', 'العمليات')
+  and (employee_name is null or char_length(trim(employee_name)) <= 100)
+  and (work_description is null or char_length(trim(work_description)) <= 500)
+  and (end_date + end_time) >= (start_date + start_time)
+);
+
+drop policy if exists "Anyone can delete work notices" on public.work_notices;
+create policy "Anyone can delete work notices"
+on public.work_notices for delete
+to anon, authenticated
+using (true);
 
 -- حذف الإشعارات تلقائيًا كل جمعة الساعة 00:00 بتوقيت السعودية (بداية يوم الجمعة).
 -- السعودية UTC+3 طوال العام، لذا الموعد المقابل هو الخميس 21:00 بالتوقيت العالمي (UTC).
