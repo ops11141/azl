@@ -28,7 +28,8 @@ header{background:linear-gradient(135deg,#fff,#edf4ff);border:1px solid var(--li
 <h2 class="section-title" id="formTitle">إضافة إشعار جديد</h2>
 <form id="noticeForm">
 <div class="form-grid">
-<div class="field"><label for="region">المنطقة</label><input id="region" name="region" placeholder="مثال: حفر الباطن" maxlength="100" required></div>
+<div class="field"><label for="regionChoice">المنطقة</label><select id="regionChoice" name="regionChoice" required><option value="النعيرية">النعيرية</option><option value="حفر الباطن">حفر الباطن</option><option value="قرية العليا">قرية العليا</option><option value="الخفجي">الخفجي</option><option value="أخرى">أخرى</option></select></div>
+<div class="field" id="otherRegionField" hidden><label for="otherRegion">اكتب اسم المدينة</label><input id="otherRegion" name="otherRegion" placeholder="اسم المدينة" maxlength="100"></div>
 <div class="field"><label for="workName">نوع العمل</label><select id="workName" name="workName" required><option value="عمل مجدول">عمل مجدول</option><option value="عمل طارئ">عمل طارئ</option><option value="صيانة">صيانة</option></select></div>
 <div class="field"><label for="department">القسم</label><select id="department" name="department" required><option value="الصيانة">الصيانة</option><option value="الإنشاءات">الإنشاءات</option><option value="الطواري">الطواري</option><option value="العمليات">العمليات</option></select></div>
 <div class="field"><label for="startDate">تاريخ البداية</label><input id="startDate" type="date" required></div>
@@ -56,6 +57,15 @@ const statusEl = document.getElementById("formStatus");
 const recordsEl = document.getElementById("records");
 const countEl = document.getElementById("count");
 const submitBtn = document.getElementById("submitBtn");
+const regionChoice = document.getElementById("regionChoice");
+const otherRegionField = document.getElementById("otherRegionField");
+const otherRegion = document.getElementById("otherRegion");
+regionChoice.addEventListener("change", () => {
+  const showOther = regionChoice.value === "أخرى";
+  otherRegionField.hidden = !showOther;
+  otherRegion.required = showOther;
+  if (!showOther) otherRegion.value = "";
+});
 let db = null;
 const configured = SUPABASE_URL.startsWith("https://") && !SUPABASE_URL.includes("YOUR_") && !SUPABASE_ANON_KEY.includes("YOUR_");
 if (configured && window.supabase) {
@@ -85,7 +95,7 @@ form.addEventListener("submit",async e=>{
   e.preventDefault();
   if(!db){setStatus("لا يمكن الحفظ قبل ربط Supabase.","error");return;}
   const payload={
-    region:document.getElementById("region").value.trim(),
+    region:regionChoice.value === "أخرى" ? otherRegion.value.trim() : regionChoice.value,
     work_name:document.getElementById("workName").value,
     department:document.getElementById("department").value,
     start_date:document.getElementById("startDate").value,
