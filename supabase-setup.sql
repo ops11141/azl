@@ -6,6 +6,8 @@ create table if not exists public.work_notices (
   region text not null check (char_length(trim(region)) between 1 and 100),
   work_name text not null check (work_name in ('عمل مجدول', 'عمل طارئ', 'صيانة')),
   department text not null check (department in ('الصيانة', 'الإنشاءات', 'الطواري', 'العمليات')),
+  employee_name text not null check (char_length(trim(employee_name)) between 1 and 100),
+  work_description text not null check (char_length(trim(work_description)) between 1 and 500),
   start_date date not null,
   start_time time without time zone not null,
   end_date date not null,
@@ -15,6 +17,10 @@ create table if not exists public.work_notices (
     (end_date + end_time) >= (start_date + start_time)
   )
 );
+
+-- إضافة العمودين أيضًا إذا كان الجدول موجودًا من إعداد سابق.
+alter table public.work_notices add column if not exists employee_name text;
+alter table public.work_notices add column if not exists work_description text;
 
 alter table public.work_notices enable row level security;
 
@@ -35,6 +41,8 @@ with check (
   char_length(trim(region)) between 1 and 100
   and work_name in ('عمل مجدول', 'عمل طارئ', 'صيانة')
   and department in ('الصيانة', 'الإنشاءات', 'الطواري', 'العمليات')
+  and char_length(trim(employee_name)) between 1 and 100
+  and char_length(trim(work_description)) between 1 and 500
   and (end_date + end_time) >= (start_date + start_time)
 );
 
